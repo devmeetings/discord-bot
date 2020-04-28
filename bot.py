@@ -58,12 +58,16 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if message.content == "refresh time":
-        await message.delete()
-        refresh()
-        await message.channel.send(':white_check_mark:')
+        role = discord.utils.find(lambda r: r.name == 'adm', message.guild.roles)
+        if role in message.author.roles:
+            await message.delete()
+            refresh()
+            await message.channel.send(':white_check_mark:')
     if message.content == 'give me intel':
-        await message.delete()
-        await message.channel.send(message.guild.id)
+        role = discord.utils.find(lambda r: r.name == 'adm', message.guild.roles)
+        if role in message.author.roles:
+            await message.delete()
+            await message.channel.send(message.guild.id)
     if message.content.startswith((dict_servkey[str(message.guild.id)])):
         if "@" in message.content:
             lista_maili = email_list(message.guild.id)
