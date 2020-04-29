@@ -22,7 +22,9 @@ def email_list(server_id):
 
 def refresh():
     global dict_servID, dict_servkey
+    print("Otwieranie Autoryzacja")
     gc = pygsheets.authorize()
+    print("Otwieranie Spreadsheeta")
     sh = gc.open('Lista uczestników Devmeetings')
     dict_servID = {}
     dict_servkey = {}
