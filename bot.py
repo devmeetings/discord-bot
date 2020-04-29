@@ -60,13 +60,13 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if message.content == "refresh time":
-        role = discord.utils.find(lambda r: r.name == 'adm', message.guild.roles)
+        role = discord.utils.find(lambda r: r.name == 'moderator', message.guild.roles)
         if role in message.author.roles:
             await message.delete()
             refresh()
             await message.channel.send(':white_check_mark:')
     if message.content == 'give me intel':
-        role = discord.utils.find(lambda r: r.name == 'adm', message.guild.roles)
+        role = discord.utils.find(lambda r: r.name == 'moderator', message.guild.roles)
         if role in message.author.roles:
             await message.delete()
             await message.channel.send(message.guild.id)
