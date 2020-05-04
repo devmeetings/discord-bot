@@ -71,7 +71,7 @@ async def on_message(message):
             await message.delete()
             await message.channel.send(message.guild.id)
     if message.content.startswith("berserk"):
-        await  message.channel.send("To tylko przykład, doczytaj instrukcję do końca :wink:")
+        await  message.channel.send("To był tylko przykład, doczytaj instrukcję do końca :wink:")
     else:
         if message.content.startswith((dict_servkey[str(message.guild.id)])):
             if "@" in message.content:
@@ -81,6 +81,7 @@ async def on_message(message):
                         await message.author.add_roles(discord.utils.get(message.author.guild.roles, name="uczestnik"))
                         await message.delete()
                         await message.channel.send(str(message.author.name)+" Rola dodana :thumbsup:\nRole added :thumbsup:")
+                        await message.guild.system_channel.send("Autoryzacja  "+str(message.author.name))
                     else:
                         await message.delete()
                         await message.channel.send("Nadano już inną rolę\nYou already have another role")
@@ -89,7 +90,6 @@ async def on_message(message):
                     await message.channel.send("Brak emaila w bazie\nNo such email in database")
             else:
                 await message.channel.send("Musisz podać jeszcze maila\nYou need to add your email")
-
 
 print("W gotowości")
 client.run(TOKEN)
