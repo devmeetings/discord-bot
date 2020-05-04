@@ -80,7 +80,7 @@ async def on_message(message):
                     if len(message.author.roles) == 1:
                         await message.author.add_roles(discord.utils.get(message.author.guild.roles, name="uczestnik"))
                         await message.delete()
-                        await message.channel.send(str(message.author.name)+" Rola dodana :thumbsup:\nRole added :thumbsup:")
+                        await message.channel.send("Rola dodana :thumbsup:\nRole added :thumbsup:")
                         await message.guild.system_channel.send("Autoryzacja  "+str(message.author.name))
                     else:
                         await message.delete()
