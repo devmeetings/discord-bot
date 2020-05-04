@@ -70,22 +70,25 @@ async def on_message(message):
         if role in message.author.roles:
             await message.delete()
             await message.channel.send(message.guild.id)
-    if message.content.startswith((dict_servkey[str(message.guild.id)])):
-        if "@" in message.content:
-            lista_maili = email_list(message.guild.id)
-            if message.content.endswith(tuple(lista_maili)):
-                if len(message.author.roles) == 1:
-                    await message.author.add_roles(discord.utils.get(message.author.guild.roles, name="uczestnik"))
-                    await message.delete()
-                    await message.channel.send(str(message.author.name)+" Rola dodana :thumbsup:\nRole added :thumbsup:")
+    if message.content.startswith("berserk"):
+        await  message.channel.send("To tylko przykład, doczytaj instrukcję do końca :wink:")
+    else:
+        if message.content.startswith((dict_servkey[str(message.guild.id)])):
+            if "@" in message.content:
+                lista_maili = email_list(message.guild.id)
+                if message.content.endswith(tuple(lista_maili)):
+                    if len(message.author.roles) == 1:
+                        await message.author.add_roles(discord.utils.get(message.author.guild.roles, name="uczestnik"))
+                        await message.delete()
+                        await message.channel.send(str(message.author.name)+" Rola dodana :thumbsup:\nRole added :thumbsup:")
+                    else:
+                        await message.delete()
+                        await message.channel.send("Nadano już inną rolę\nYou already have another role")
                 else:
                     await message.delete()
-                    await message.channel.send("Nadano już inną rolę\nYou already have another role")
+                    await message.channel.send("Brak emaila w bazie\nNo such email in database")
             else:
-                await message.delete()
-                await message.channel.send("Brak emaila w bazie\nNo such email in database")
-        else:
-            await message.channel.send("Musisz podać jeszcze maila\nYou need to add your email")
+                await message.channel.send("Musisz podać jeszcze maila\nYou need to add your email")
 
 
 print("W gotowości")
