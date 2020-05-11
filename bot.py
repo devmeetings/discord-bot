@@ -4,7 +4,7 @@
 import discord, pygsheets
 
 TOKEN = 'NzAyOTAyNjE0MzYyNDIzMzc4.XqdSPQ.MV1vxkUy0FgjjoxXa7GRrqes11s'
-
+reactions_list = ["❤️", "🧡", "💛", "💚", "💙", "💜"]
 print("Startujemy")
 
 
@@ -80,16 +80,37 @@ async def on_message(message):
                     if len(message.author.roles) == 1:
                         await message.author.add_roles(discord.utils.get(message.author.guild.roles, name="uczestnik"))
                         await message.delete()
-                        await message.channel.send("Rola dodana :thumbsup:\nRole added :thumbsup:")
+                        await message.channel.send("Rola dodana :thumbsup:")
                         await message.guild.system_channel.send("Autoryzacja  "+str(message.author.name))
                     else:
                         await message.delete()
-                        await message.channel.send("Nadano już inną rolę\nYou already have another role")
+                        await message.channel.send("Nadano już inną rolę")
                 else:
                     await message.delete()
-                    await message.channel.send("Brak emaila w bazie\nNo such email in database")
+                    await message.channel.send("Brak emaila w bazie")
             else:
-                await message.channel.send("Musisz podać jeszcze maila\nYou need to add your email")
-
+                await message.channel.send("Musisz podać jeszcze maila")
+    if message.content.startswith("vote") or message.content.startswith("Vote"):
+        role1 = discord.utils.find(lambda r: r.name == 'moderator', message.guild.roles)
+        role2 = discord.utils.find(lambda r: r.name == 'mentor', message.guild.roles)
+        role3 = discord.utils.find(lambda r: r.name == 'organizator', message.guild.roles)
+        role4 = discord.utils.find(lambda r: r.name == 'prowadzący', message.guild.roles)
+        if role1 in message.author.roles or role2 in message.author.roles or role3 in message.author.roles or role4 in message.author.roles:
+            in_text=message.content[4:]
+            await message.delete()
+            in_text=in_text.split(";")
+            if len(in_text)!=0:
+                if len(in_text)==1 or len(in_text)==2:
+                    await message.channel.send("@everyone Zagłosuj poprzez reakcję\n"+in_text[0]+"\n❤️ - TAK\n🧡 - NIE")
+                else:
+                    out_text = "@everyone Zagłosuj poprzez reakcję\n"+in_text[0]
+                    for x in zip(in_text[1:],reactions_list):
+                        out_text+="\n"+x[0]+" - "+x[1]
+                    await message.channel.send(out_text)
+    if message.author == client.user:
+        if message.content.startswith("@everyone Zagłosuj poprzez reakcję"):
+            for x in reactions_list:
+                if x in message.content:
+                    await message.add_reaction(x)
 print("W gotowości")
 client.run(TOKEN)
