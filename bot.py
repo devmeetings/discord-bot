@@ -34,15 +34,18 @@ def refresh():
     c = b + str(wiersz)
     while wk2.get_value(c) != '':
         a = wk2.get_row(wiersz)
-        while "" in a:
-            a.remove("")
-        dict_servID[a[0]] = a[1]
-        dict_servkey[a[0]] = [a[2]]
-        for x in range(3, len(a)):
-            dict_servkey[a[0]].append(a[x])
-        dict_servkey[a[0]] = tuple(dict_servkey[a[0]])
         wiersz += 1
         c = b + str(wiersz)
+        while "" in a:
+            a.remove("")
+        if len(a) < 3:
+            print("Wrong length:", a)
+        else:
+            dict_servID[a[0]] = a[1]
+            dict_servkey[a[0]] = [a[2]]
+            for x in range(3, len(a)):
+                dict_servkey[a[0]].append(a[x])
+            dict_servkey[a[0]] = tuple(dict_servkey[a[0]])
 
 refresh()
 print("załadowano słowniki")
