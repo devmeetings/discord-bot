@@ -34,18 +34,15 @@ def refresh():
     c = b + str(wiersz)
     while wk2.get_value(c) != '':
         a = wk2.get_row(wiersz)
-        wiersz += 1
-        c = b + str(wiersz)
         while "" in a:
             a.remove("")
-        if len(a) < 3:
-            print("Wrong length:", a)
-        else:
-            dict_servID[a[0]] = a[1]
-            dict_servkey[a[0]] = [a[2]]
-            for x in range(3, len(a)):
-                dict_servkey[a[0]].append(a[x])
-            dict_servkey[a[0]] = tuple(dict_servkey[a[0]])
+        dict_servID[a[0]] = a[1]
+        dict_servkey[a[0]] = [a[2]]
+        for x in range(3, len(a)):
+            dict_servkey[a[0]].append(a[x])
+        dict_servkey[a[0]] = tuple(dict_servkey[a[0]])
+        wiersz += 1
+        c = b + str(wiersz)
 
 refresh()
 print("załadowano słowniki")
@@ -74,6 +71,8 @@ async def on_message(message):
             await message.channel.send(message.guild.id)
     else:
         if message.content.startswith((dict_servkey[str(message.guild.id)])):
+            await message.delete()
+            refresh()
             if "@" in message.content:
                 lista_maili = email_list(message.guild.id)
                 if message.content.endswith(tuple(lista_maili)):
@@ -83,19 +82,15 @@ async def on_message(message):
                             for y in x.roles:
                                 if y.name=="uczestnik":
                                     ilosc_uczestnikow=+1
-                        if ilosc_uczestników>=40:
-                            await message.delete()
+                        if ilosc_uczestnikow>=40:
                             await message.channel.send("Zapełniona ilość miejsc na warsztaty, spróbuj na kolejne zapisać się wcześniej")
                         else:
-                            await message.delete()
                             await message.author.add_roles(discord.utils.get(message.author.guild.roles, name="uczestnik"))
                             await message.channel.send("Rola dodana :thumbsup:")
                             await message.guild.system_channel.send("Autoryzacja  "+str(message.author.name))
                     else:
-                        await message.delete()
                         await message.channel.send("Nadano już inną rolę")
                 else:
-                    await message.delete()
                     await message.channel.send("Brak emaila w bazie")
             else:
                 await message.channel.send("Musisz podać jeszcze maila")
@@ -121,10 +116,6 @@ async def on_message(message):
             for x in reactions_list:
                 if x in message.content:
                     await message.add_reaction(x)
-
-@client.event
-async def on_member_join():
-    refresh()
 
 print("W gotowości")
 client.run(TOKEN)
