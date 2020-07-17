@@ -4,5 +4,6 @@ set -xe
 
 NAME=devmeetings-discord-bot
 docker build -t $NAME .
-docker run -d -t $NAME
+docker stop $NAME || true
+docker run -d --name $NAME -t $NAME 
 
