@@ -3,22 +3,32 @@
 
 import discord, pygsheets
 
-TOKEN = 'NzAyOTAyNjE0MzYyNDIzMzc4.XqdSPQ.MV1vxkUy0FgjjoxXa7GRrqes11s'
+TOKEN = 'NzAyOTAyNjE0MzYyNDIzMzc4.XqGzEg.bgokFRCOWY57HVsYuzwL5zGQoFs'
 reactions_list = ["❤️", "🧡", "💛", "💚", "💙", "💜"]
 print("Startujemy")
 
-
-def email_list(server_id):
-    server_id = str(server_id)
+def email_authorization(guild_id,mail):
     gc = pygsheets.authorize()
     sh = gc.open('Lista uczestników Devmeetings')
-    nazwa = dict_servID[server_id]
-    wk1 = sh.worksheet('title', nazwa)
-    a = wk1.get_col(1)
-    while "" in a:
-        a.remove("")
-    return a
-
+    sheetname=dict_servID[str(guild_id)]
+    wk3=sh.worksheet('title',sheetname)
+    savedmails=wk3.get_col(1,include_tailing_empty=False)
+    print(savedmails)
+    if mail in savedmails:
+        wk4=sh.worksheet('title','MASTER')
+        #try:
+        allmails=wk4.get_col(1,include_tailing_empty=False)
+        allcolnames=wk4.get_row(1,include_tailing_empty=False)
+        x=allcolnames.index(sheetname+' status')
+        y=allmails.index(mail)
+        wk4.update_value(((y+1,x+1)), 'UCZESTNIK')
+        #except ValueError:
+        #    print("Error while trying to write member to worksheet")
+        status_list=wk3.get_col(4,include_tailing_empty=False)
+        ilosc_uczestnikow=status_list.count("UCZESTNIK")
+        return [True,ilosc_uczestnikow]
+    else:
+        return [False]
 
 def refresh():
     global dict_servID, dict_servkey
@@ -45,7 +55,7 @@ def refresh():
         c = b + str(wiersz)
 
 refresh()
-print("załadowano słowniki")
+print("Załadowano słowniki")
 # running up
 client = discord.Client()
 
@@ -72,22 +82,17 @@ async def on_message(message):
     else:
         if message.content.startswith((dict_servkey[str(message.guild.id)])):
             await message.delete()
-            refresh()
             if "@" in message.content:
-                lista_maili = email_list(message.guild.id)
-                if message.content.endswith(tuple(lista_maili)):
+                func_value=email_authorization(message.guild.id,message.content.split()[1])
+                print(func_value)
+                if func_value[0]:
                     if len(message.author.roles) == 1:
-                        ilosc_uczestnikow=0
-                        for x in message.server.members:
-                            for y in x.roles:
-                                if y.name=="uczestnik":
-                                    ilosc_uczestnikow=+1
-                        if ilosc_uczestnikow>=40:
+                        if func_value[1]>=40:
                             await message.channel.send("Zapełniona ilość miejsc na warsztaty, spróbuj na kolejne zapisać się wcześniej")
                         else:
                             await message.author.add_roles(discord.utils.get(message.author.guild.roles, name="uczestnik"))
                             await message.channel.send("Rola dodana :thumbsup:")
-                            await message.guild.system_channel.send("Autoryzacja  "+str(message.author.name))
+                            await message.guild.system_channel.send("Autoryzacja  "+str(message.content.split()[1]))
                     else:
                         await message.channel.send("Nadano już inną rolę")
                 else:
