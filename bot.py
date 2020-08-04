@@ -18,7 +18,6 @@ def email_check(guild_id, mail, username):
     b = wk2.get_col(2, include_tailing_empty=False)
     c = wk2.get_col(3, include_tailing_empty=False)
     dict_serv = dict(zip(a, zip(b, c)))
-    print(dict_serv)
     guild_list = dict_serv[str(guild_id)]
     if int(guild_list[1]) >= 40:
         return False
@@ -90,10 +89,9 @@ async def on_message(message):
                     role5 = discord.utils.find(lambda r: r.name == 'uczestnik', message.guild.roles)
                     await message.author.add_roles(role5)
                     await message.channel.send("Rola dodana :thumbsup:")
-                    await message.guild.system_channel.send("Autoryzacja  " + str(message.content.split()[1]))
+                    await message.guild.system_channel.send("Autoryzowano  " + str(message.content.split()[1]))
                 else:
-                    await message.channel.send(
-                        "Zapełniona ilość miejsc na warsztaty, spróbuj na kolejne zapisać się wcześniej")
+                    await message.channel.send("Zapełniona ilość miejsc na warsztaty, spróbuj na kolejne zapisać się wcześniej")
             else:
                 await message.channel.send("Nadano już inną rolę")
         else:
