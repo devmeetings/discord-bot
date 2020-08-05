@@ -7,6 +7,11 @@ TOKEN = 'NzAyOTAyNjE0MzYyNDIzMzc4.XqGzEg.bgokFRCOWY57HVsYuzwL5zGQoFs'
 reactions_list = ["❤️", "🧡", "💛", "💚", "💙", "💜"]
 print("Startujemy")
 
+def pygsh():
+    gc = pygsheets.authorize()
+    sh = gc.open('Lista maili 2')
+
+pygsh()
 
 def email_check(guild_id, mail, username):
     global dict_serv
