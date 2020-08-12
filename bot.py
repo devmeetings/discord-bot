@@ -5,16 +5,23 @@ import discord, pygsheets
 
 TOKEN = 'NzAyOTAyNjE0MzYyNDIzMzc4.XqGzEg.bgokFRCOWY57HVsYuzwL5zGQoFs'
 reactions_list = ["❤️", "🧡", "💛", "💚", "💙", "💜"]
+emojidict = {"angular": "angular",
+             "react": "react",
+             "python": "data science",
+             "js": "javascript",
+             "🥔": "poznań",
+             "🐟": "trójmiasto",
+             "🏙️": "warszawa",
+             "🌉": "wrocław",
+             "🐲": "kraków",
+             "⛏️": "katowice"}
+
+dictid = {}
+
 print("Startujemy")
 
-def pygsh():
-    gc = pygsheets.authorize()
-    sh = gc.open('Lista maili 2')
-
-pygsh()
 
 def email_check(guild_id, mail, username):
-    global dict_serv
     gc = pygsheets.authorize()
     sh = gc.open('Lista maili 2')
     wk1 = sh.worksheet('title', "Lista")
@@ -41,81 +48,112 @@ def intro():
 
 
 # running up
+
 client = discord.Client()
 
 
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
-
+    
 
 # commands
 @client.event
 async def on_message(message):
-    if message.content == "refresh time":
+    if "Direct Message with" in str(message.channel):
+        if message.author != client.user:
+            await message.channel.send(
+                "Hej, w celu kontaktu napisz na serwerze lub bezpośrednio do moderatora lub mentora")
+            outputserv = client.get_channel(740679436680167547)
+            await outputserv.send(str(message.author) + "   " + str(message.content))
+    else:
         role = discord.utils.find(lambda r: r.name == 'moderator', message.guild.roles)
         if role in message.author.roles:
+            if message.content == 'give me intel':
+                await message.delete()
+                await message.channel.send(message.guild.id)
+            if message.content == 'wprowadzenie':
+                await message.delete()
+                intro_text = intro()
+                for x in intro_text:
+                    await message.channel.send(x)
+            if message.content.startswith('It reminded me of the way'):
+                await message.delete()
+                msg = message.content[26:]
+                role1 = discord.utils.find(lambda r: r.name == 'moderator', message.guild.roles)
+                role2 = discord.utils.find(lambda r: r.name == 'mentor', message.guild.roles)
+                role3 = discord.utils.find(lambda r: r.name == 'organizator', message.guild.roles)
+                role4 = discord.utils.find(lambda r: r.name == 'prowadzący', message.guild.roles)
+                role5 = discord.utils.find(lambda r: r.name == 'uczestnik', message.guild.roles)
+                errornames = []
+                for person in message.guild.members:
+                    if role1 in person.roles or role2 in person.roles or role3 in person.roles or role4 in person.roles or role5 in person.roles:
+                        pass
+                    else:
+                        try:
+                            await person.create_dm()
+                            await person.dm_channel.send(msg)
+                        except:
+                            errornames.append(person.name)
+                if errornames != []:
+                    await message.guild.system_channel.send(
+                        "Nie można utworzyć kanału z użytkownikami " + str(errornames))
+        if message.content.startswith("vote") or message.content.startswith("Vote"):
+            role1 = discord.utils.find(lambda r: r.name == 'moderator', message.guild.roles)
+            role2 = discord.utils.find(lambda r: r.name == 'mentor', message.guild.roles)
+            role3 = discord.utils.find(lambda r: r.name == 'organizator', message.guild.roles)
+            role4 = discord.utils.find(lambda r: r.name == 'prowadzący', message.guild.roles)
+            if role1 in message.author.roles or role2 in message.author.roles or role3 in message.author.roles or role4 in message.author.roles:
+                in_text = message.content[4:]
+                await message.delete()
+                in_text = in_text.split(";")
+                if len(in_text) != 0:
+                    if len(in_text) == 1 or len(in_text) == 2:
+                        await message.channel.send(
+                            "@everyone Zagłosuj poprzez reakcję\n" + in_text[0] + "\n❤️ - TAK\n🧡 - NIE")
+                    else:
+                        out_text = "@everyone Zagłosuj poprzez reakcję\n" + in_text[0]
+                        for x in zip(in_text[1:], reactions_list):
+                            out_text += "\n" + x[0] + " - " + x[1]
+                        await message.channel.send(out_text)
+        if message.author == client.user:
+            if message.content.startswith("@everyone Zagłosuj poprzez reakcję"):
+                for x in reactions_list:
+                    if x in message.content:
+                        await message.add_reaction(x)
+        if message.content.lower().startswith("autoryzacja"):
             await message.delete()
-            refresh()
-            await message.channel.send(':white_check_mark:')
-    if message.content == 'give me intel':
-        role = discord.utils.find(lambda r: r.name == 'moderator', message.guild.roles)
-        if role in message.author.roles:
-            await message.delete()
-            await message.channel.send(message.guild.id)
-    if message.content.startswith("vote") or message.content.startswith("Vote"):
-        role1 = discord.utils.find(lambda r: r.name == 'moderator', message.guild.roles)
-        role2 = discord.utils.find(lambda r: r.name == 'mentor', message.guild.roles)
-        role3 = discord.utils.find(lambda r: r.name == 'organizator', message.guild.roles)
-        role4 = discord.utils.find(lambda r: r.name == 'prowadzący', message.guild.roles)
-        if role1 in message.author.roles or role2 in message.author.roles or role3 in message.author.roles or role4 in message.author.roles:
-            in_text = message.content[4:]
-            await message.delete()
-            in_text = in_text.split(";")
-            if len(in_text) != 0:
-                if len(in_text) == 1 or len(in_text) == 2:
-                    await message.channel.send(
-                        "@everyone Zagłosuj poprzez reakcję\n" + in_text[0] + "\n❤️ - TAK\n🧡 - NIE")
+            if "@" and "." in message.content:
+                if len(message.author.roles) == 1:
+                    if email_check(message.guild.id, message.content.split()[1], message.author.name):
+                        role5 = discord.utils.find(lambda r: r.name == 'uczestnik', message.guild.roles)
+                        await message.author.add_roles(role5)
+                        await message.channel.send("Rola dodana :thumbsup:")
+                        await message.guild.system_channel.send("Autoryzowano  " + str(message.content.split()[1]))
+                    else:
+                        await message.channel.send(
+                            "Zapełniona ilość miejsc na warsztaty, spróbuj na kolejne zapisać się wcześniej")
                 else:
-                    out_text = "@everyone Zagłosuj poprzez reakcję\n" + in_text[0]
-                    for x in zip(in_text[1:], reactions_list):
-                        out_text += "\n" + x[0] + " - " + x[1]
-                    await message.channel.send(out_text)
-    if message.author == client.user:
-        if message.content.startswith("@everyone Zagłosuj poprzez reakcję"):
-            for x in reactions_list:
-                if x in message.content:
-                    await message.add_reaction(x)
-    if message.content.lower().startswith("autoryzacja"):
-        await message.delete()
-        if "@" and "." in message.content:
-            if len(message.author.roles) == 1:
-                if email_check(message.guild.id, message.content.split()[1], message.author.name):
-                    role5 = discord.utils.find(lambda r: r.name == 'uczestnik', message.guild.roles)
-                    await message.author.add_roles(role5)
-                    await message.channel.send("Rola dodana :thumbsup:")
-                    await message.guild.system_channel.send("Autoryzowano  " + str(message.content.split()[1]))
-                else:
-                    await message.channel.send("Zapełniona ilość miejsc na warsztaty, spróbuj na kolejne zapisać się wcześniej")
+                    await message.channel.send("Nadano już inną rolę")
             else:
-                await message.channel.send("Nadano już inną rolę")
-        else:
-            await message.channel.send("Musisz podać prawidłowego maila")
-    if message.content.lower().startswith("rezygnacja"):
-        await message.delete()
-        role5 = discord.utils.find(lambda r: r.name == 'uczestnik', message.guild.roles)
-        if role5 in message.author.roles:
-            await message.author.remove_roles(role5)
-            await message.channel.send("Usunięto rolę, wpadnij na kolejne warsztaty")
-        else:
-            await message.channel.send("Obawiam się, że nie byłes zapisany na warsztaty ;)")
-    if message.content == 'wprowadzenie':
-        role = discord.utils.find(lambda r: r.name == 'moderator', message.guild.roles)
-        if role in message.author.roles:
+                await message.channel.send("Musisz podać prawidłowego maila")
+        if message.content.lower().startswith("rezygnacja"):
             await message.delete()
-            intro_text = intro()
-            for x in intro_text:
-                await message.channel.send(x)
+            role5 = discord.utils.find(lambda r: r.name == 'uczestnik', message.guild.roles)
+            if role5 in message.author.roles:
+                await message.author.remove_roles(role5)
+                await message.channel.send("Usunięto rolę, wpadnij na kolejne warsztaty")
+                await message.guild.system_channel.send("Rezygnacja  " + str(message.author.name))
+            else:
+                await message.channel.send("Obawiam się, że nie byłes zapisany na warsztaty ;)")
+
+
+@client.event
+async def on_raw_reaction_add(payload):
+    if payload.channel_id == 742736260153737284:
+        rolename = emojidict[payload.emoji.name]
+        role0 = discord.utils.find(lambda r: r.name == rolename, payload.member.guild.roles)
+        await payload.member.add_roles(role0)
 
 
 print("W gotowości")
