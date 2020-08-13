@@ -15,11 +15,27 @@ emojidict = {"angular": "angular",
              "🌉": "wrocław",
              "🐲": "kraków",
              "⛏️": "katowice"}
-
-dictid = {}
+names_list=[Alfa,Bravo,Charlie,Delta,Echo,Foxtrot,Golf,Hotel,India,Juliett,Kilo,Lima,Mike,November]
 
 print("Startujemy")
 
+
+def alpha(message):
+    vc = discord.utils.find(lambda r: r.name == 'warsztat', message.guild.voice_channels)
+    role5 = discord.utils.find(lambda r: r.name == 'uczestnik', message.guild.roles)
+    actvmemb=[]
+    for person in vc.members:
+        if role5 in person.roles:
+            actvmemb.append(person)
+    n=count(actvmemb)//3
+    for x in range(0,n,3):
+        role0 = discord.utils.find(lambda r: r.name == names_list[x], message.guild.roles)
+        await actvmemb[x].add_roles(role0)
+        await actvmemb[x+1].add_roles(role0)
+        await actvmemb[x+2].add_roles(role0)
+    for x in range(count(actvmemb)%3):
+        role0 = discord.utils.find(lambda r: r.name == names_list[x], message.guild.roles)
+        await actvmemb[n+x].add_roles(role0)
 
 def email_check(guild_id, mail, username):
     gc = pygsheets.authorize()
@@ -55,7 +71,7 @@ client = discord.Client()
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
-    
+
 
 # commands
 @client.event
@@ -69,6 +85,8 @@ async def on_message(message):
     else:
         role = discord.utils.find(lambda r: r.name == 'moderator', message.guild.roles)
         if role in message.author.roles:
+            if message.content == "delta mike":
+                alpha(message)
             if message.content == 'give me intel':
                 await message.delete()
                 await message.channel.send(message.guild.id)
